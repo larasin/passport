@@ -2,6 +2,7 @@
 
 namespace Laravel\Passport;
 
+use Laravel\Passport\Bridge\ProviderQuery;
 use Lcobucci\JWT\Parser as JwtParser;
 use League\OAuth2\Server\AuthorizationServer;
 use Zend\Diactoros\Response;
@@ -74,6 +75,7 @@ class PersonalAccessTokenFactory
         $token = tap($this->findAccessToken($response), function ($token) use ($userId, $name) {
             $this->tokens->save($token->forceFill([
                 'user_id' => $userId,
+                'user_type' => ProviderQuery::getModel(),
                 'name' => $name,
             ]));
         });

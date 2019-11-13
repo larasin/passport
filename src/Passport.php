@@ -307,8 +307,8 @@ class Passport
     {
         if (is_null($date)) {
             return static::$tokensExpireAt
-                            ? Carbon::now()->diff(static::$tokensExpireAt)
-                            : new DateInterval('P1Y');
+                ? Carbon::now()->diff(static::$tokensExpireAt)
+                : new DateInterval('P1Y');
         }
 
         static::$tokensExpireAt = $date;
@@ -326,8 +326,8 @@ class Passport
     {
         if (is_null($date)) {
             return static::$refreshTokensExpireAt
-                            ? Carbon::now()->diff(static::$refreshTokensExpireAt)
-                            : new DateInterval('P1Y');
+                ? Carbon::now()->diff(static::$refreshTokensExpireAt)
+                : new DateInterval('P1Y');
         }
 
         static::$refreshTokensExpireAt = $date;
@@ -458,7 +458,7 @@ class Passport
         $file = ltrim($file, '/\\');
 
         return static::$keyPath
-            ? rtrim(static::$keyPath, '/\\').DIRECTORY_SEPARATOR.$file
+            ? rtrim(static::$keyPath, '/\\') . DIRECTORY_SEPARATOR . $file
             : storage_path($file);
     }
 

@@ -44,13 +44,11 @@ class Client extends Model
     /**
      * Get the user that the client belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
     public function user()
     {
-        return $this->belongsTo(
-            config('auth.providers.'.config('auth.guards.api.provider').'.model')
-        );
+        return $this->morphTo();
     }
 
     /**
