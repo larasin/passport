@@ -3,6 +3,7 @@
 namespace Laravel\Passport;
 
 use Illuminate\Support\Str;
+use Laravel\Passport\Bridge\ProviderQuery;
 use RuntimeException;
 
 class ClientRepository
@@ -45,9 +46,10 @@ class ClientRepository
         $client = Passport::client();
 
         return $client
-                    ->where($client->getKeyName(), $clientId)
-                    ->where('user_id', $userId)
-                    ->first();
+            ->where($client->getKeyName(), $clientId)
+            ->where('user_id', $userId)
+            ->where('user_type', ProviderQuery::getModel())
+            ->first();
     }
 
     /**
@@ -59,8 +61,9 @@ class ClientRepository
     public function forUser($userId)
     {
         return Passport::client()
-                    ->where('user_id', $userId)
-                    ->orderBy('name', 'asc')->get();
+            ->where('user_id', $userId)
+            ->where('user_type', ProviderQuery::getModel())
+            ->orderBy('name', 'asc')->get();
     }
 
     /**
@@ -113,6 +116,7 @@ class ClientRepository
     {
         $client = Passport::client()->forceFill([
             'user_id' => $userId,
+            'user_type' => $userId ? ProviderQuery::getModel() : null,
             'name' => $name,
             'secret' => ($confidential || $personalAccess) ? Str::random(40) : null,
             'redirect' => $redirect,

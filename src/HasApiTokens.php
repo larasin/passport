@@ -16,21 +16,21 @@ trait HasApiTokens
     /**
      * Get all of the user's registered OAuth clients.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
     public function clients()
     {
-        return $this->hasMany(Passport::clientModel(), 'user_id');
+        return $this->morphMany(Passport::clientModel(), 'user');
     }
 
     /**
      * Get all of the access tokens for the user.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
     public function tokens()
     {
-        return $this->hasMany(Passport::tokenModel(), 'user_id')->orderBy('created_at', 'desc');
+        return $this->morphMany(Passport::tokenModel(), 'user')->orderBy('created_at', 'desc');
     }
 
     /**
@@ -51,7 +51,8 @@ trait HasApiTokens
      */
     public function tokenCan($scope)
     {
-        return $this->accessToken ? $this->accessToken->can($scope) : false;
+        return $this->accessToken && $this->accessToken->user_type === get_class($this) ?
+            $this->accessToken->can($scope) : false;
     }
 
     /**
@@ -64,7 +65,9 @@ trait HasApiTokens
     public function createToken($name, array $scopes = [])
     {
         return Container::getInstance()->make(PersonalAccessTokenFactory::class)->make(
-            $this->getKey(), $name, $scopes
+            $this->getKey(),
+            $name,
+            $scopes
         );
     }
 

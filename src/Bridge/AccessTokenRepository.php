@@ -56,6 +56,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
         $this->tokenRepository->create([
             'id' => $accessTokenEntity->getIdentifier(),
             'user_id' => $accessTokenEntity->getUserIdentifier(),
+            'user_type' => ProviderQuery::getModel(),
             'client_id' => $accessTokenEntity->getClient()->getIdentifier(),
             'scopes' => $this->scopesToArray($accessTokenEntity->getScopes()),
             'revoked' => false,

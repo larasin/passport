@@ -33,9 +33,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getUserEntityByUserCredentials($username, $password, $grantType, ClientEntityInterface $clientEntity)
     {
-        $provider = config('auth.guards.api.provider');
-
-        if (is_null($model = config('auth.providers.'.$provider.'.model'))) {
+        if (is_null($model = ProviderQuery::getModel())) {
             throw new RuntimeException('Unable to determine authentication model from configuration.');
         }
 

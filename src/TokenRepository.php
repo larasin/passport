@@ -3,6 +3,7 @@
 namespace Laravel\Passport;
 
 use Carbon\Carbon;
+use Laravel\Passport\Bridge\ProviderQuery;
 
 class TokenRepository
 {
@@ -37,7 +38,11 @@ class TokenRepository
      */
     public function findForUser($id, $userId)
     {
-        return Passport::token()->where('id', $id)->where('user_id', $userId)->first();
+        return Passport::token()
+            ->where('id', $id)
+            ->where('user_id', $userId)
+            ->where('user_type', ProviderQuery::getModel())
+            ->first();
     }
 
     /**
@@ -48,7 +53,10 @@ class TokenRepository
      */
     public function forUser($userId)
     {
-        return Passport::token()->where('user_id', $userId)->get();
+        return Passport::token()
+            ->where('user_id', $userId)
+            ->where('user_type', ProviderQuery::getModel())
+            ->get();
     }
 
     /**
@@ -61,7 +69,8 @@ class TokenRepository
     public function getValidToken($user, $client)
     {
         return $client->tokens()
-                    ->whereUserId($user->getKey())
+                    ->where('user_id', $user->getKey())
+                    ->where('user_type', ProviderQuery::getModel())
                     ->where('revoked', 0)
                     ->where('expires_at', '>', Carbon::now())
                     ->first();
@@ -115,7 +124,8 @@ class TokenRepository
     public function findValidToken($user, $client)
     {
         return $client->tokens()
-                      ->whereUserId($user->getKey())
+                      ->where('user_id', $user->getKey())
+                      ->where('user_type', ProviderQuery::getModel())
                       ->where('revoked', 0)
                       ->where('expires_at', '>', Carbon::now())
                       ->latest('expires_at')

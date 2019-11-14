@@ -267,15 +267,18 @@ class PassportServiceProvider extends ServiceProvider
      */
     protected function makeGuard(array $config)
     {
-        return new RequestGuard(function ($request) use ($config) {
+        $userProvider = Auth::createUserProvider($config['provider']);
+        return tap(new RequestGuard(function ($request) use ($userProvider) {
             return (new TokenGuard(
                 $this->app->make(ResourceServer::class),
-                Auth::createUserProvider($config['provider']),
+                $userProvider,
                 $this->app->make(TokenRepository::class),
                 $this->app->make(ClientRepository::class),
                 $this->app->make('encrypter')
             ))->user($request);
-        }, $this->app['request']);
+        }, $this->app['request']), function ($requestGuard) use ($userProvider) {
+            $requestGuard->userProviderModel = $userProvider->getModel();
+        });
     }
 
     /**
